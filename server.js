@@ -1,6 +1,7 @@
 const express = require("express");
 const puppeteer = require("puppeteer");
 const bodyParser = require("body-parser");
+const locateChrome = require("locate-chrome");
 
 const app = express();
 const port = 4000;
@@ -18,8 +19,13 @@ app.post("/scrape", async (req, res) => {
     const { url } = req.body;
     console.log("url", url);
 
+    const executablePath =
+      (await new Promise((resolve) => locateChrome((arg) => resolve(arg)))) ||
+      "";
+
     const browser = await puppeteer.launch({
       headless: true,
+      executablePath,
       args: ["--disable-http2", "--no-sandbox", "--disable-setuid-sandbox"],
     });
 
