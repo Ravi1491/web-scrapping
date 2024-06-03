@@ -39,4 +39,5 @@ jobs:
           script: |
             cd /home/${{ secrets.LIGHTSAIL_USERNAME }}/htdocs
             npm install
-            node server.js
+            sudo npm install -g pm2
+            pm2 restart all || pm2 start server.js --name "my-app"
