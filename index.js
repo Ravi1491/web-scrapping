@@ -9,6 +9,10 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get("/", (req, res) => {
+  res.send("Hello Web Scraping!");
+});
+
 app.post("/scrape", async (req, res) => {
   try {
     const { url } = req.body;
