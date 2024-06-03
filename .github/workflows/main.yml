@@ -37,6 +37,13 @@ jobs:
           username: ${{ secrets.LIGHTSAIL_USERNAME }}
           key: ${{ secrets.LIGHTSAIL_KEY }}
           script: |
+            # Stop any process using port 4000
+            PORT=4000
+            PID=$(lsof -t -i:$PORT)
+            if [ -n "$PID" ]; then
+              kill -9 $PID
+            fi
+
             cd /home/${{ secrets.LIGHTSAIL_USERNAME }}/htdocs
             npm install
             sudo npm install -g pm2
