@@ -1,0 +1,42 @@
+name: Deploy to AWS Lightsail
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install Our App
+        run: npm install
+
+      - name: Copy files to Lightsail
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.LIGHTSAIL_IP }}
+          username: ${{ secrets.LIGHTSAIL_USERNAME }}
+          key: ${{ secrets.LIGHTSAIL_KEY }}
+          source: ./
+          target: /home/${{ secrets.LIGHTSAIL_USERNAME }}/htdocs
+
+      - name: SSH into Lightsail and restart server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.LIGHTSAIL_IP }}
+          username: ${{ secrets.LIGHTSAIL_USERNAME }}
+          key: ${{ secrets.LIGHTSAIL_KEY }}
+          script: |
+            cd /home/${{ secrets.LIGHTSAIL_USERNAME }}/htdocs
+            npm install
+            node server.js
